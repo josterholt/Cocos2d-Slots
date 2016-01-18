@@ -1,5 +1,6 @@
 #include "ReelScene.h"
 #include <string>
+#include "SimpleAudioEngine.h"
 
 USING_NS_CC;
 
@@ -32,9 +33,9 @@ bool ReelScene::init()
 
 	_reel2 = Sprite::create("reel1.png");
 	_reel2->setAnchorPoint(Vec2(0, 0));
-	_reel2->setPosition(_reel1->getBoundingBox().size.height, 0);
+	_reel2->setPosition(0, _reel1->getBoundingBox().size.height);
 	this->addChild(_reel2, 0);
-	//applyMask(_reel2);
+	applyMask(_reel2);
 
 	auto overlay = Sprite::create("overlay.png");
 	overlay->setAnchorPoint(Vec2(0, 0));
@@ -42,8 +43,29 @@ bool ReelScene::init()
 	this->addChild(overlay, 0);
 
 
-
+	/**
+	* Begin touch event handling
+	*/
+	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
+	audio->preloadEffect("start-reel.mp3");
+	audio->preloadEffect("stop-reel.mp3");
+	EventListenerTouchOneByOne* listener = EventListenerTouchOneByOne::create();
 	
+	listener->onTouchBegan = [this, audio](Touch* touch, Event* event) -> bool {
+		this->_isSpinning = true;
+		audio->playEffect("start-reel.mp3", false, 1.0f, 1.0f, 1.0f);
+		
+		auto scheduler = Director::getInstance()->getScheduler();
+		scheduler->schedule([this, audio](float dt) {
+			this->_isSpinning = false;
+			audio->playEffect("stop-reel.mp3", false, 1.0f, 1.0f, 1.0f);
+		}, this, 6.0f, false, 0.0f, false, "myCallbackKey");
+		return true;
+	};
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
+	/**
+	* End touch event handling
+	*/
 
 	_customCommand.init(_globalZOrder);
 	_customCommand.func = CC_CALLBACK_0(ReelScene::onDraw, this);
@@ -72,7 +94,6 @@ void ReelScene::applyMask(Sprite* _sprite)
 	CHECK_GL_ERROR_DEBUG();
 
 	int maskTexUniformLoc = shader->getUniformLocationForName("u_alphaMaskTexture");
-	cocos2d::log(std::to_string(_mask->getTexture()->getName()).c_str());
 	shader->setUniformLocationWith1i(maskTexUniformLoc, 1);
 
 	glActiveTexture(GL_TEXTURE1); // This is presumptuous that our mask will always be TEXTURE1
@@ -87,40 +108,28 @@ void ReelScene::applyMask(Sprite* _sprite)
 
 void ReelScene::onDraw()
 {
-	/*
-	cocos2d::log("Testing");
-	shader->use();
-	glActiveTexture(GL_TEXTURE1);
-	cocos2d::log(std::to_string(_mask->getTexture()->getName()).c_str());
-	glBindTexture(GL_TEXTURE_2D, _mask->getTexture()->getName());
-	glActiveTexture(GL_TEXTURE0);
-	*/
 	return;
 }
 
 void ReelScene::update(float delta)
 {
+	if (_isSpinning)
+	{
+		incrementSpin(delta);
+	}
+}
+
+void ReelScene::incrementSpin(float delta)
+{
 	cocos2d::Vec2 position1 = _reel1->getPosition(); // Returns const vec2& ... why are we modifying this even though it's a const?
-	position1.y -= 1000 * delta;
+	position1.y -= 1200 * delta;
 	
 	cocos2d::Vec2 position2 = _reel2->getPosition(); // Returns const vec2& ... why are we modifying this even though it's a const?
-	position2.y -= 1000 * delta;
+	position2.y -= 1200 * delta;
 	
 	int top_y = position1.y + _reel1->getBoundingBox().size.height;
-	//position.y < 0 - (_sprite->getBoundingBox().size.height/2)
-	if (top_y < this->getBoundingBox().getMaxY())
+	if (top_y < 0)
 	{
-		/*
-		cocos2d::log("Sprite location");
-		cocos2d::log(std::to_string(position1.y + _reel1->getBoundingBox().size.height).c_str());
-		cocos2d::log("Max Y:");
-		cocos2d::log(std::to_string(this->getBoundingBox().getMaxY()).c_str());
-		cocos2d::log("Bounding box:");
-		cocos2d::log(std::to_string(_reel1->getBoundingBox().size.height).c_str());
-		*/
-		//position.y = this->getBoundingBox().getMaxY() + _sprite->getBoundingBox().size.height;
-		//position1.y = 0;
-
 		// Place sheet above secondary
 		position1.y = position2.y + _reel2->getBoundingBox().size.height;
 	}
@@ -130,24 +139,10 @@ void ReelScene::update(float delta)
 
 
 	top_y = position2.y + _reel2->getBoundingBox().size.height;
-	//position.y < 0 - (_sprite->getBoundingBox().size.height/2)
-	if (top_y < this->getBoundingBox().getMaxY())
+	if (top_y < 0)
 	{
-		/*
-		cocos2d::log("Sprite location");
-		cocos2d::log(std::to_string(position2.y + _reel2->getBoundingBox().size.height).c_str());
-		cocos2d::log("Max Y:");
-		cocos2d::log(std::to_string(this->getBoundingBox().getMaxY()).c_str());
-		cocos2d::log("Bounding box:");
-		cocos2d::log(std::to_string(_reel2->getBoundingBox().size.height).c_str());
-		*/
-		//position.y = this->getBoundingBox().getMaxY() + _sprite->getBoundingBox().size.height;
-		//position2.y = 0;
-
 		// Place sheet above first
 		position2.y = position1.y + _reel1->getBoundingBox().size.height;
 	}
 	_reel2->setPosition(position2);
-
-
 }

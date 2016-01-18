@@ -16,5 +16,7 @@ private:
 	cocos2d::Sprite* _reel1;
 	cocos2d::Sprite* _reel2;
 	cocos2d::Sprite* _mask;
+	bool _isSpinning = FALSE;
+	void ReelScene::incrementSpin(float delta);
 	void ReelScene::applyMask(cocos2d::Sprite* _sprite);
 };
