@@ -1,0 +1,21 @@
+uniform sampler2D u_texture;
+uniform sampler2D u_alphaMaskTexture;
+
+varying vec2 v_texCoord;
+
+
+void main() {
+    float maskAlpha = texture2D(u_alphaMaskTexture, v_texCoord).a;
+	float texAlpha = texture2D(u_texture, v_texCoord).a;
+	float blendAlpha = (1.0 - maskAlpha) * texAlpha; // Show only where mask is visible
+	
+	vec3 texColor = texture2D(u_texture, v_texCoord).rgb;
+	//vec3 texColor = texture2D(u_alphaMaskTexture, v_texCoord).rgb;
+	
+
+	//gl_FragColor = texture2D(u_texture, v_texCoord).rgba;
+	//gl_FragColor = vec4(texColor, 0.0);
+	//gl_FragColor = texture2D(u_alphaMaskTexture, v_texCoord);
+	//gl_FragColor = vec4(texColor, 1.0 - texture2D(u_alphaMaskTexture, v_texCoord).a);
+	gl_FragColor = vec4(texColor, blendAlpha);
+}
