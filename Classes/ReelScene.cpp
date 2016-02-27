@@ -1,4 +1,5 @@
 #include "ReelScene.h"
+#include "ReelSprite.h"
 #include <string>
 #include "SimpleAudioEngine.h"
 
@@ -21,21 +22,34 @@ bool ReelScene::init()
 	}
 
 	// Load mask
-	_mask = Sprite::create("mask.png");
-	_mask->getTexture()->setAliasTexParameters();
+	//_mask = Sprite::create("mask.png");
+	//_mask->getTexture()->setAliasTexParameters();
 
 	// Load reels
-	_reel1 = Sprite::create("reel1.png");
+	/*
+	_reel1 = Sprite::create("reel1a.png");
 	_reel1->setAnchorPoint(Vec2(0, 0));
 	_reel1->setPosition(0, 0);
 	this->addChild(_reel1, 0);
-	applyMask(_reel1);
 
-	_reel2 = Sprite::create("reel1.png");
+	_reel2 = Sprite::create("reel1a.png");
 	_reel2->setAnchorPoint(Vec2(0, 0));
 	_reel2->setPosition(0, _reel1->getBoundingBox().size.height);
 	this->addChild(_reel2, 0);
-	applyMask(_reel2);
+	*/
+	_reel1 = ReelSprite::create("reel1.png");
+	_reel1->setPosition(0, 0);
+	this->addChild(_reel1, 0);
+
+	_reel2 = ReelSprite::create("reel2.png");
+	_reel2->setPosition(267, 0);
+	this->addChild(_reel2, 0);
+
+	_reel3 = ReelSprite::create("reel3.png");
+	_reel3->setPosition(534, 0);
+	this->addChild(_reel3, 0);
+
+
 
 	auto overlay = Sprite::create("overlay.png");
 	overlay->setAnchorPoint(Vec2(0, 0));
@@ -46,12 +60,25 @@ bool ReelScene::init()
 	/**
 	* Begin touch event handling
 	*/
-	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
-	audio->preloadEffect("start-reel.mp3");
-	audio->preloadEffect("stop-reel.mp3");
+	audioMgr = CocosDenshion::SimpleAudioEngine::getInstance();
+	audioMgr->preloadEffect("start-reel.mp3");
+	audioMgr->preloadEffect("stop-reel.mp3");
+
 	EventListenerTouchOneByOne* listener = EventListenerTouchOneByOne::create();
-	
-	listener->onTouchBegan = [this, audio](Touch* touch, Event* event) -> bool {
+	listener->onTouchBegan = [this](Touch* touch, Event* event) -> bool {
+		this->audioMgr->playEffect("start-reel.mp3", false, 1.0f, 1.0f, 1.0f);
+		this->_reel1->startSpin();
+
+		auto scheduler = Director::getInstance()->getScheduler();
+		scheduler->schedule([this](float dt) {
+			this->_reel2->startSpin();
+		}, this, 0.3f, false, 0.0f, false, "myCallbackKey1");
+
+		scheduler->schedule([this](float dt) {
+			this->_reel3->startSpin();
+		}, this, 0.5f, false, 0.0f, false, "myCallbackKey2");
+
+		/*
 		this->_isSpinning = true;
 		audio->playEffect("start-reel.mp3", false, 1.0f, 1.0f, 1.0f);
 		
@@ -60,6 +87,7 @@ bool ReelScene::init()
 			this->_isSpinning = false;
 			audio->playEffect("stop-reel.mp3", false, 1.0f, 1.0f, 1.0f);
 		}, this, 6.0f, false, 0.0f, false, "myCallbackKey");
+		*/
 		return true;
 	};
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
@@ -113,10 +141,24 @@ void ReelScene::onDraw()
 
 void ReelScene::update(float delta)
 {
+	if (_reel1->_isSpinning)
+	{
+		_reel1->incrementSpin(delta);
+	}
+	if (_reel2->_isSpinning)
+	{
+		_reel2->incrementSpin(delta);
+	}
+	if (_reel3->_isSpinning)
+	{
+		_reel3->incrementSpin(delta);
+	}
+	/*
 	if (_isSpinning)
 	{
 		incrementSpin(delta);
 	}
+	*/
 }
 
 void ReelScene::incrementSpin(float delta)
