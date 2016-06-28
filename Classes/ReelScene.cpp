@@ -1,9 +1,17 @@
 #include "ReelScene.h"
 #include "ReelSprite.h"
+#include "cocos2d.h"
 #include <string>
 #include "SimpleAudioEngine.h"
 
 USING_NS_CC;
+
+ReelScene::ReelScene() 
+	: _slotGrid(1, std::vector<int>(3)),
+	cocos2d::Layer()
+{
+
+}
 
 Scene* ReelScene::createScene()
 {
@@ -41,6 +49,9 @@ bool ReelScene::init()
 	_reel1->setPosition(0, 0);
 	this->addChild(_reel1, 0);
 
+	_reel1->setSlotPosition(35);
+
+	/*
 	_reel2 = ReelSprite::create("reel2.png");
 	_reel2->setPosition(267, 0);
 	this->addChild(_reel2, 0);
@@ -48,7 +59,13 @@ bool ReelScene::init()
 	_reel3 = ReelSprite::create("reel3.png");
 	_reel3->setPosition(534, 0);
 	this->addChild(_reel3, 0);
+	*/
 
+	_reels.push_back(_reel1);
+	/*
+	_reels.push_back(_reel2);
+	_reels.push_back(_reel3);
+	*/
 
 
 	auto overlay = Sprite::create("overlay.png");
@@ -60,15 +77,15 @@ bool ReelScene::init()
 	/**
 	* Begin touch event handling
 	*/
-	audioMgr = CocosDenshion::SimpleAudioEngine::getInstance();
-	audioMgr->preloadEffect("start-reel.mp3");
-	audioMgr->preloadEffect("stop-reel.mp3");
+	_audioMgr = CocosDenshion::SimpleAudioEngine::getInstance();
+	_audioMgr->preloadEffect("start-reel.mp3");
+	_audioMgr->preloadEffect("stop-reel.mp3");
 
 	EventListenerTouchOneByOne* listener = EventListenerTouchOneByOne::create();
 	listener->onTouchBegan = [this](Touch* touch, Event* event) -> bool {
-		this->audioMgr->playEffect("start-reel.mp3", false, 1.0f, 1.0f, 1.0f);
+		this->_audioMgr->playEffect("start-reel.mp3", false, 1.0f, 1.0f, 1.0f);
 		this->_reel1->startSpin();
-
+		/*
 		auto scheduler = Director::getInstance()->getScheduler();
 		scheduler->schedule([this](float dt) {
 			this->_reel2->startSpin();
@@ -77,7 +94,7 @@ bool ReelScene::init()
 		scheduler->schedule([this](float dt) {
 			this->_reel3->startSpin();
 		}, this, 0.5f, false, 0.0f, false, "myCallbackKey2");
-
+		*/
 		/*
 		this->_isSpinning = true;
 		audio->playEffect("start-reel.mp3", false, 1.0f, 1.0f, 1.0f);
@@ -145,6 +162,7 @@ void ReelScene::update(float delta)
 	{
 		_reel1->incrementSpin(delta);
 	}
+	/*
 	if (_reel2->_isSpinning)
 	{
 		_reel2->incrementSpin(delta);
@@ -153,38 +171,22 @@ void ReelScene::update(float delta)
 	{
 		_reel3->incrementSpin(delta);
 	}
-	/*
-	if (_isSpinning)
-	{
-		incrementSpin(delta);
-	}
 	*/
+
+	updateSlotGrid();
 }
 
-void ReelScene::incrementSpin(float delta)
+void ReelScene::updateSlotGrid()
 {
-	cocos2d::Vec2 position1 = _reel1->getPosition(); // Returns const vec2& ... why are we modifying this even though it's a const?
-	position1.y -= 1200 * delta;
-	
-	cocos2d::Vec2 position2 = _reel2->getPosition(); // Returns const vec2& ... why are we modifying this even though it's a const?
-	position2.y -= 1200 * delta;
-	
-	int top_y = position1.y + _reel1->getBoundingBox().size.height;
-	if (top_y < 0)
-	{
-		// Place sheet above secondary
-		position1.y = position2.y + _reel2->getBoundingBox().size.height;
+	int cell_num;
+	for (int i = 0; i < _slotGrid.size(); ++i) {
+		for (int h = 0; h < _slotGrid[i].size(); ++h) {
+			int value = _reels[i]->getCellValue(h);
+			_slotGrid[i][h] = value;
+		}
 	}
-	_reel1->setPosition(position1);
-
-
-
-
-	top_y = position2.y + _reel2->getBoundingBox().size.height;
-	if (top_y < 0)
-	{
-		// Place sheet above first
-		position2.y = position1.y + _reel1->getBoundingBox().size.height;
-	}
-	_reel2->setPosition(position2);
+	//if (_reel1->_isSpinning) {
+	cocos2d::log("updateSlotGrid: %d", _slotGrid[0][0]);
+	//}
+	return;
 }
