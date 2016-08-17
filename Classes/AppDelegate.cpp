@@ -5,7 +5,7 @@
 USING_NS_CC;
 
 AppDelegate::AppDelegate() {
-
+	srand(time(NULL));
 }
 
 AppDelegate::~AppDelegate() 

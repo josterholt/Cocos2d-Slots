@@ -35,7 +35,10 @@ bool GraphicsScene::init()
 
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 
-
+	
+	CCDrawNode* node = CCDrawNode::create();
+	this->addChild(node, -1);
+	node->drawSegment(CCPoint(0, 0), CCPoint(600, 600), 5.0f, Color4F(1.0f, 1.0f, 1.0f, 1.0f));
 	return true;
 }
 
