@@ -5,14 +5,6 @@
 using namespace cocos2d;
 
 ReelSprite::ReelSprite() {}
-
-/*
-ReelSprite::ReelSprite(const std::string& filename)
-{
-	
-}
-*/
-
 ReelSprite::~ReelSprite() {}
 
 ReelSprite* ReelSprite::create(const std::string& filename, std::vector<int> _cells)
@@ -22,12 +14,6 @@ ReelSprite* ReelSprite::create(const std::string& filename, std::vector<int> _ce
 	mainSprite->init(filename);
 	mainSprite->autorelease();
 	mainSprite->cells = _cells; // @todo Check on how to properly handle this
-	/*
-	for (int i = 0; i < _cells.size(); i++) {
-		mainSprite->cells[i] = _cells[i];
-	}
-	*/
-
 
 	return mainSprite;
 }
@@ -78,12 +64,12 @@ int ReelSprite::getCellValue(int num)
 	
 	int scan_line_y = slot_top_y - reel_position1.y;
 
-	if (scan_line_y <= 0) {
+	if (scan_line_y <= 0 || scan_line_y > this->_stripHeight) {
 		scan_line_y = slot_top_y - reel_position2.y;
 	}
 
 	int location = this->_numCells - ((static_cast<float>(scan_line_y) / this->_cellHeight));
-	//cocos2d::log("Value 0: %d", cells[location]);
+	cocos2d::log("Location %d", location);
 	return cells[location]; // hard coded value to represent slot offset
 }
 
@@ -94,9 +80,8 @@ float ReelSprite::getCellHeight()
 
 void ReelSprite::startSpin(int interval_buffer)
 {
-	int foo = rand() % 2;
-	this->spinInterval = (foo) + interval_buffer;
-	cocos2d::log("Spin interval %d", this->spinInterval);
+	this->spinInterval = (rand() % 2) + interval_buffer;
+	//cocos2d::log("Spin interval %d", this->spinInterval);
 	this->_isSpinning = true;
 	auto scheduler = Director::getInstance()->getScheduler();
 
@@ -105,29 +90,23 @@ void ReelSprite::startSpin(int interval_buffer)
 		int slot = floorf((position.y - this->yOffset) / this->_cellHeight);
 		float new_y = (this->_cellHeight * slot);
 		new_y +=  this->yOffset;
-		//new_y -= this->yOffset;
-		cocos2d::log("new y: %s", std::to_string(new_y).c_str());
+
+		//cocos2d::log("new y: %s", std::to_string(new_y).c_str());
 		if (position.y != new_y)
 		{
-			cocos2d::log("Gradual stop");
-			//position.y = new_y;
 			float y_diff = position.y - new_y;
 			float velocity = abs(y_diff) / this->speed;
 
-			MoveBy* moveBy1 = MoveBy::create(velocity, Vec2(0, -y_diff));
-			//moveBy1->setTarget(this->_reel1);
-			
+			MoveBy* moveBy1 = MoveBy::create(velocity, Vec2(0, -y_diff));		
 			MoveBy* moveBy2 = MoveBy::create(velocity, Vec2(0, -y_diff));
-			//moveBy2->setTarget(this->_reel2);
 
-			cocos2d::log("### Sprite before move %s", std::to_string(this->_reel1->getPosition().y).c_str());
-			cocos2d::log("### Move by: %s", std::to_string(y_diff).c_str());
+			//cocos2d::log("### Sprite before move %s", std::to_string(this->_reel1->getPosition().y).c_str());
+			//cocos2d::log("### Move by: %s", std::to_string(y_diff).c_str());
+
 			_isStopping = true;
 			CallFunc* callback = CallFunc::create(this, callfunc_selector(ReelSprite::stopSpin));
 			_stopSequence = Sequence::create(Spawn::create(TargetedAction::create(this->_reel1, moveBy1), TargetedAction::create(this->_reel2, moveBy2)), callback, NULL);
 			this->runAction(_stopSequence);
-
-			cocos2d::log("Sequence added");
 		}
 		else {
 			this->stopSpin();
@@ -143,19 +122,9 @@ void ReelSprite::stopSpin()
 		_isStopping = false;
 		this->_audioMgr->playEffect("stop-reel.mp3", false, 1.0f, 1.0f, 1.0f);
 
-		//cocos2d::log("Foo: ", std::to_string(getCellValue(0)).c_str());
 		debugSlotName1->setString(std::to_string(getCellValue(0)));
 		debugSlotName2->setString(std::to_string(getCellValue(1)));
 		debugSlotName3->setString(std::to_string(getCellValue(2)));
-
-		/*
-		Vec2 position1 = this->_reel1->getPosition();
-		Vec2 position2 = this->_reel2->getPosition();
-		cocos2d::log("### STOP SPINNING ###");
-		cocos2d::log("Reel 1 Position: %d", position1.y);
-		cocos2d::log("Reel 2 Position: %d", position2.y);
-		cocos2d::log("Cell Height: %d", this->_cellHeight);
-		*/
 	}
 }
 
@@ -179,8 +148,6 @@ void ReelSprite::incrementSpin(float delta)
 		}
 		this->_reel1->setPosition(position1);
 
-
-
 		height = this->_reel2->getBoundingBox().size.height;
 		top_y = position2.y + height;
 		if (top_y < 0)
@@ -197,8 +164,6 @@ void ReelSprite::incrementSpin(float delta)
 */
 void ReelSprite::setSlotPosition(int position) {
 	Vec2 position1 = this->_reel1->getPosition();
-	cocos2d::log("Reel height: %d", this->_reel1->getBoundingBox().size.height);
-	cocos2d::log("NumCells: %d", this->_numCells);
 
 	int calc = (this->_numCells - (position + 3)) * this->_cellHeight;
 	int reel_height = this->_reel1->getBoundingBox().size.height;

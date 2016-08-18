@@ -23,11 +23,12 @@ std::vector<MatchSequence> linearPatternSearch(std::vector<std::vector<int>> gri
 	cocos2d::log("%s %s %s", std::to_string(grid[2][0]).c_str(), std::to_string(grid[2][1]).c_str(), std::to_string(grid[2][2]).c_str());
 
 	std::vector<MatchSequence> sequences;
-	for (int x = 0; x < grid.size(); x++) {
+	size_t grid_size = grid.size();
+	for (int x = 0; x < grid_size; x++) {
 		MatchSequence sequence;
 
-		size_t grid_size = grid[x].size();
-		for (int y = 0; y < grid_size; y++) {
+		size_t grid_row_size = grid[x].size();
+		for (int y = 0; y < grid_row_size; y++) {
 
 			// Fall out if this is the first cell of a row or match sequence is broken
 			if (y != 0) {
@@ -202,33 +203,6 @@ bool ReelScene::init()
 	return true;
 }
 
-/*
-void ReelScene::applyMask(Sprite* _sprite)
-{
-	// Load fragment shader
-	FileUtils* fileUtils = FileUtils::getInstance();
-	std::string vertexSource = ccPositionTextureColor_noMVP_vert;
-	std::string fragSource = fileUtils->getStringFromFile(fileUtils->fullPathForFilename("Mask.fragmentshader"));
-
-	GLProgram* shader = _sprite->getShaderProgram();
-	shader->initWithByteArrays(vertexSource.c_str(), fragSource.c_str());
-	shader->bindAttribLocation(cocos2d::GLProgram::ATTRIBUTE_NAME_POSITION, cocos2d::GLProgram::VERTEX_ATTRIB_POSITION);
-	shader->bindAttribLocation(cocos2d::GLProgram::ATTRIBUTE_NAME_TEX_COORD, cocos2d::GLProgram::VERTEX_ATTRIB_TEX_COORDS);
-	shader->link();
-
-	CHECK_GL_ERROR_DEBUG();
-	shader->updateUniforms();
-	CHECK_GL_ERROR_DEBUG();
-
-	int maskTexUniformLoc = shader->getUniformLocationForName("u_alphaMaskTexture");
-	shader->setUniformLocationWith1i(maskTexUniformLoc, 1);
-
-	glActiveTexture(GL_TEXTURE1); // This is presumptuous that our mask will always be TEXTURE1
-	glBindTexture(GL_TEXTURE_2D, _mask->getTexture()->getName());
-	glActiveTexture(GL_TEXTURE0);
-}
-*/
-
 void ReelScene::onDraw()
 {
 	return;
@@ -266,17 +240,13 @@ void ReelScene::update(float delta)
 
 void ReelScene::updateSlotGrid()
 {
-	for (int col = 0; col < _slotGrid.size(); ++col) {
+	size_t grid_size = _slotGrid.size();
+	for (int col = 0; col < grid_size; ++col) {
 		for (int row = 0; row < _slotGrid[col].size(); ++row) {
 			int value = _reels[col]->getCellValue(row);
 			_slotGrid[row][col] = value;
 		}
 	}
-	//if (_reel1->_isSpinning) {
-	//cocos2d::log("updateSlotGrid: %d", _slotGrid[0][0]);
-	//cocos2d::log("updateSlotGrid: %d", _slotGrid[0][1]);
-	//cocos2d::log("updateSlotGrid: %d", _slotGrid[0][2]);
-	//}
 	return;
 }
 
@@ -284,8 +254,8 @@ void ReelScene::displayMatches() {
 	Vec2 line_offset = Vec2(80.0f, 400.0f);
 	float cell_height = (2514 / 18);
 	float row_width = 267;
-	float multiplier = 0.5f;
 	float cell_mid_height = cell_height * 0.5f;
+	float cell_mid_width = row_width * 0.5f;
 	float line_size = 2.0f;
 
 	CCDrawNode* node1 = CCDrawNode::create();
@@ -299,13 +269,13 @@ void ReelScene::displayMatches() {
 		Vec2 column3 = sequence.matches[2];
 
 		CCPoint line1_start = CCPoint(row_width * column1.x + line_offset.x, (cell_height * -column1.y) + cell_mid_height + line_offset.y);
-		CCPoint line1_end = CCPoint(row_width * column1.x + (row_width * 0.5) + line_offset.x, (cell_height * -column1.y) + cell_mid_height + line_offset.y);
+		CCPoint line1_end = CCPoint(row_width * column1.x + cell_mid_width + line_offset.x, (cell_height * -column1.y) + cell_mid_height + line_offset.y);
 		node1->drawSegment(line1_start, line1_end, line_size, Color4F(0.0f, 0.0f, 1.0f, 1.0f));
 
-		CCPoint line2_end = CCPoint(row_width * column2.x + (row_width * 0.5f) + line_offset.x, (cell_height * -column2.y) + cell_mid_height + line_offset.y);
+		CCPoint line2_end = CCPoint(row_width * column2.x + cell_mid_width + line_offset.x, (cell_height * -column2.y) + cell_mid_height + line_offset.y);
 		node1->drawSegment(line1_end, line2_end, line_size, Color4F(0.0f, 0.0f, 1.0f, 1.0f));
 
-		CCPoint line3_start = CCPoint(row_width * column3.x + (row_width * 0.5f) + line_offset.x, (cell_height * -column3.y) + cell_mid_height + line_offset.y);
+		CCPoint line3_start = CCPoint(row_width * column3.x + cell_mid_width + line_offset.x, (cell_height * -column3.y) + cell_mid_height + line_offset.y);
 		node1->drawSegment(line2_end, line3_start, line_size, Color4F(0.0f, 0.0f, 1.0f, 1.0f));
 
 		CCPoint line4_end = CCPoint(row_width * column3.x + row_width + line_offset.x, (cell_height * -column3.y) + cell_mid_height + line_offset.y);
