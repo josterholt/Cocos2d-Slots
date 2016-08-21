@@ -3,57 +3,10 @@
 #include "cocos2d.h"
 #include <string>
 #include "SimpleAudioEngine.h"
+#include "Utilities.h"
+
 
 USING_NS_CC;
-
-struct MatchSequence {
-	std::vector<Vec2> matches;
-	int weight = 0;
-};
-
-/*
- 0, 0, 0
- 0, 0, 0
- 0, 0, 0
- */
-std::vector<MatchSequence> linearPatternSearch(std::vector<std::vector<int>> grid) {
-	cocos2d::log("Match check");
-	cocos2d::log("%s %s %s", std::to_string(grid[0][0]).c_str(), std::to_string(grid[0][1]).c_str(), std::to_string(grid[0][2]).c_str());
-	cocos2d::log("%s %s %s", std::to_string(grid[1][0]).c_str(), std::to_string(grid[1][1]).c_str(), std::to_string(grid[1][2]).c_str());
-	cocos2d::log("%s %s %s", std::to_string(grid[2][0]).c_str(), std::to_string(grid[2][1]).c_str(), std::to_string(grid[2][2]).c_str());
-
-	std::vector<MatchSequence> sequences;
-	size_t grid_size = grid.size();
-	for (int x = 0; x < grid_size; x++) {
-		MatchSequence sequence;
-
-		size_t grid_row_size = grid[x].size();
-		for (int y = 0; y < grid_row_size; y++) {
-
-			// Fall out if this is the first cell of a row or match sequence is broken
-			if (y != 0) {
-				cocos2d::log("(%d, %d) %d vs %d", x, y, grid[x][y], grid[x][y - 1]);
-			}
-
-			if (y == 0 || grid[x][y] != grid[x][y - 1]) {
-				continue; // Stop matching this row, line has been broken
-			}
-
-			// A match has started or continued
-			if (y == 1) {
-				// Add previous cell to start new sequence
-				sequence.matches.push_back(Vec2(y - 1, x)); // Row matches, log it
-			}
-			sequence.matches.push_back(Vec2(y, x)); // Row matches, log it
-		}
-
-		if (sequence.matches.size() == grid_size) {
-			sequences.push_back(sequence);
-		}
-	}
-
-	return sequences;
-}
 
 ReelScene::ReelScene() 
 	: _slotGrid(3, std::vector<int>(3)),
@@ -66,6 +19,10 @@ Scene* ReelScene::createScene()
 {
 	auto scene = Scene::create();
 	auto layer = ReelScene::create();
+	layer->setTag(MAIN_LAYER);
+#ifdef UNIT_TESTING
+	GameUtils::SetPresentLayer(layer, WHO_REEL_MAIN);
+#endif
 	scene->addChild(layer);
 
 	return scene;
@@ -77,6 +34,10 @@ bool ReelScene::init()
 	{
 		return false;
 	}
+
+	_matchLine1 = CCDrawNode::create();
+	this->addChild(_matchLine1);
+
 
 	float x_offset = 81.0f;
 	float _y_offset = 111.0f;
@@ -174,17 +135,29 @@ bool ReelScene::init()
 
 	EventListenerTouchOneByOne* listener = EventListenerTouchOneByOne::create();
 	listener->onTouchBegan = [this](Touch* touch, Event* event) -> bool {
-		_activeRound = true;
+		/**
+		 * Pre-round routines
+		 */
+		_matchLine1->clear();
+
+
+		/**
+		 * Start new round
+		 */
+		this->_activeRound = true;
+
+		std::array<int, 3> stop_positions = getStopPositions(); // Would this be optimized by passing in allocated var?
+
 		this->_audioMgr->playEffect("start-reel.mp3", false, 1.0f, 1.0f, 1.0f);
-		this->_reel1->startSpin(rand() % 2 + 1.5f);
+		this->_reel1->startSpin(rand() % 2 + 1.5f, stop_positions[0]);
 
 		auto scheduler = Director::getInstance()->getScheduler();
-		scheduler->schedule([this](float dt) {
-			this->_reel2->startSpin(this->_reel1->spinInterval);
+		scheduler->schedule([this, stop_positions](float dt) {
+			this->_reel2->startSpin(this->_reel1->spinInterval, stop_positions[1]);
 		}, this, 0.3f, false, 0.0f, false, "myCallbackKey1");
 
-		scheduler->schedule([this](float dt) {
-			this->_reel3->startSpin(this->_reel2->spinInterval);
+		scheduler->schedule([this, stop_positions](float dt) {
+			this->_reel3->startSpin(this->_reel2->spinInterval, stop_positions[2]);
 		}, this, 0.5f, false, 0.0f, false, "myCallbackKey2");
 
 		return true;
@@ -258,9 +231,6 @@ void ReelScene::displayMatches() {
 	float cell_mid_width = row_width * 0.5f;
 	float line_size = 2.0f;
 
-	CCDrawNode* node1 = CCDrawNode::create();
-	this->addChild(node1);
-
 	std::vector<MatchSequence> sequences = linearPatternSearch(_slotGrid);
 	for (MatchSequence sequence : sequences) {
 		// Begging of column to center of first cell
@@ -270,15 +240,19 @@ void ReelScene::displayMatches() {
 
 		CCPoint line1_start = CCPoint(row_width * column1.x + line_offset.x, (cell_height * -column1.y) + cell_mid_height + line_offset.y);
 		CCPoint line1_end = CCPoint(row_width * column1.x + cell_mid_width + line_offset.x, (cell_height * -column1.y) + cell_mid_height + line_offset.y);
-		node1->drawSegment(line1_start, line1_end, line_size, Color4F(0.0f, 0.0f, 1.0f, 1.0f));
+		_matchLine1->drawSegment(line1_start, line1_end, line_size, Color4F(0.0f, 0.0f, 1.0f, 1.0f));
 
 		CCPoint line2_end = CCPoint(row_width * column2.x + cell_mid_width + line_offset.x, (cell_height * -column2.y) + cell_mid_height + line_offset.y);
-		node1->drawSegment(line1_end, line2_end, line_size, Color4F(0.0f, 0.0f, 1.0f, 1.0f));
+		_matchLine1->drawSegment(line1_end, line2_end, line_size, Color4F(0.0f, 0.0f, 1.0f, 1.0f));
 
 		CCPoint line3_start = CCPoint(row_width * column3.x + cell_mid_width + line_offset.x, (cell_height * -column3.y) + cell_mid_height + line_offset.y);
-		node1->drawSegment(line2_end, line3_start, line_size, Color4F(0.0f, 0.0f, 1.0f, 1.0f));
+		_matchLine1->drawSegment(line2_end, line3_start, line_size, Color4F(0.0f, 0.0f, 1.0f, 1.0f));
 
 		CCPoint line4_end = CCPoint(row_width * column3.x + row_width + line_offset.x, (cell_height * -column3.y) + cell_mid_height + line_offset.y);
-		node1->drawSegment(line3_start, line4_end, line_size, Color4F(0.0f, 0.0f, 1.0f, 1.0f));
+		_matchLine1->drawSegment(line3_start, line4_end, line_size, Color4F(0.0f, 0.0f, 1.0f, 1.0f));
 	}
+}
+
+void ReelScene::myTestFunc() {
+	cocos2d::log("Func invoked!");
 }

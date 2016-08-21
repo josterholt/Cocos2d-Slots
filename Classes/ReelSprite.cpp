@@ -68,8 +68,12 @@ int ReelSprite::getCellValue(int num)
 		scan_line_y = slot_top_y - reel_position2.y;
 	}
 
-	int location = this->_numCells - ((static_cast<float>(scan_line_y) / this->_cellHeight));
-	cocos2d::log("Location %d", location);
+	// Location needs to be zero based
+	int location = (this->_numCells - 1)- ((static_cast<float>(scan_line_y) / this->_cellHeight));
+	if (location < 0) {
+		location += this->_numCells;
+	}
+	//cocos2d::log("Location %d", location);
 	return cells[location]; // hard coded value to represent slot offset
 }
 
@@ -78,18 +82,51 @@ float ReelSprite::getCellHeight()
 	return _cellHeight;
 }
 
-void ReelSprite::startSpin(int interval_buffer)
+void ReelSprite::startSpin(int interval_buffer, int stop_position)
 {
 	this->spinInterval = (rand() % 2) + interval_buffer;
 	//cocos2d::log("Spin interval %d", this->spinInterval);
 	this->_isSpinning = true;
 	auto scheduler = Director::getInstance()->getScheduler();
 
-	scheduler->schedule([this](float dt) {
-		Vec2 position = this->_reel1->getPosition();
-		int slot = floorf((position.y - this->yOffset) / this->_cellHeight);
-		float new_y = (this->_cellHeight * slot);
-		new_y +=  this->yOffset;
+	/**
+	* Given a stop position, gracefully move strip to desired stop position
+	* Where first row is stop position
+	* If position has been passed on current strip, use next strip
+	* Next strip may be underneath if desired position is at the end of strips
+	*/
+	scheduler->schedule([this, stop_position](float dt) {
+
+		int adjusted_stop_position = stop_position + 2;
+
+		// 17 + 2 = 19
+		// 16 + 2 = 18
+		if (adjusted_stop_position >= this->_numCells) {
+			adjusted_stop_position -= this->_numCells;
+		}
+
+		Vec2 position1 = this->_reel1->getPosition();
+		Vec2 position2 = this->_reel2->getPosition();
+		//int cell = floorf((position.y - this->yOffset) / this->_cellHeight);
+
+		cocos2d::log("Desired stop position %d", stop_position);
+
+		// Calculate y cell position relative to bottom of a single strip instance
+		float new_y = (this->_cellHeight * stop_position);
+
+		Vec2 position;
+
+		//cocos2d::log("1y: %d, 2y %d, newy %d", std::to_string(position1.y).c_str(), std::to_string(position2.y).c_str(), std::to_string(new_y).c_str());
+		if (position1.y < position2.y && (position1.y - new_y) >= 0 || position1.y > position2.y && (position2.y - new_y) <= 0) {
+			// First strip is below second
+			position = position1;
+			cocos2d::log("POSITION 1");
+		}
+		else {
+			// First strip is above second
+			position = position2;
+			cocos2d::log("POSITION 2");
+		}
 
 		//cocos2d::log("new y: %s", std::to_string(new_y).c_str());
 		if (position.y != new_y)
@@ -130,14 +167,15 @@ void ReelSprite::stopSpin()
 
 void ReelSprite::incrementSpin(float delta)
 {
-	if (_isSpinning && !_isStopping) {
+	if (_isSpinning) {
 		Vec2 position1 = this->_reel1->getPosition(); // Returns const vec2& ... why are we modifying this even though it's a const?
-		position1.y -= this->speed * delta;
-
 		Vec2 position2 = this->_reel2->getPosition(); // Returns const vec2& ... why are we modifying this even though it's a const?
-		position2.y -= this->speed * delta;
-
 		float height;
+
+		if (!_isStopping) {
+			position1.y -= this->speed * delta;
+			position2.y -= this->speed * delta;
+		}
 
 		height = this->_reel1->getBoundingBox().size.height;
 		int top_y = position1.y + height;

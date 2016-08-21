@@ -1,5 +1,9 @@
 #include "main.h"
-#include "AppDelegate.h"
+#ifndef UNIT_TESTING
+	#include "AppDelegate.h"
+#else
+	#include "TestDelegate.h"
+#endif
 #include "cocos2d.h"
 
 USING_NS_CC;

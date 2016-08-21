@@ -16,7 +16,7 @@ public:
 	~ReelSprite();
 	static ReelSprite* create(const std::string& filename, std::vector<int> _cells);
 	virtual bool init(const std::string& filename);
-	void ReelSprite::startSpin(int interval_buffer);
+	void ReelSprite::startSpin(int interval_buffer, int stop_position);
 	void ReelSprite::stopSpin();
 	void ReelSprite::incrementSpin(float delta);
 	float spinInterval = 0;

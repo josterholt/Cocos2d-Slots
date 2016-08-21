@@ -4,6 +4,7 @@
 #include "ReelSprite.h"
 #include "SimpleAudioEngine.h"
 #include <vector>
+#include <array>
 
 class ReelScene : public cocos2d::Layer
 {
@@ -13,6 +14,7 @@ public:
 	virtual bool init();
 	virtual void onDraw();
 	void update(float delta) override;
+	void myTestFunc();
 	CREATE_FUNC(ReelScene);
 private:
 	cocos2d::CustomCommand _customCommand;
@@ -20,7 +22,8 @@ private:
 	ReelSprite* _reel1;
 	ReelSprite* _reel2;
 	ReelSprite* _reel3;
-
+	std::array<int, 3> stopCellPositions;
+	cocos2d::CCDrawNode* _matchLine1;
 	std::vector<ReelSprite*> _reels;
 	std::vector<std::vector<int>> _slotGrid;
 	cocos2d::Sprite* _mask;
@@ -30,5 +33,7 @@ private:
 	void applyMask(cocos2d::Sprite* _sprite);
 	void updateSlotGrid();
 	void displayMatches();
+
+
 
 };
