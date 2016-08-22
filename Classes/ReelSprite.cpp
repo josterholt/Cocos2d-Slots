@@ -69,7 +69,8 @@ int ReelSprite::getCellValue(int num)
 	}
 
 	// Location needs to be zero based
-	int location = (this->_numCells - 1)- ((static_cast<float>(scan_line_y) / this->_cellHeight));
+	int tmp_position = floor((static_cast<float>(scan_line_y) / this->_cellHeight));
+	int location = (this->_numCells - 1)- tmp_position;
 	if (location < 0) {
 		location += this->_numCells;
 	}
@@ -112,7 +113,7 @@ void ReelSprite::startSpin(int interval_buffer, int stop_position)
 		cocos2d::log("Desired stop position %d", stop_position);
 
 		// Calculate y cell position relative to bottom of a single strip instance
-		float new_y = (this->_cellHeight * stop_position);
+		float new_y = -(this->_cellHeight * stop_position) + (this->_cellHeight * 2);
 
 		Vec2 position;
 
