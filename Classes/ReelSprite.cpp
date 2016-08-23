@@ -27,7 +27,7 @@ bool ReelSprite::init(const std::string& filename)
 
 	this->_reel2 = Sprite::create(filename);
 	this->_reel2->setAnchorPoint(Vec2(0, 0));
-	this->_reel2->setPosition(0, _reel1->getBoundingBox().size.height);
+	this->_reel2->setPosition(0, -_reel2->getBoundingBox().size.height);
 	this->addChild(_reel2);
 	
 	Vec2 tmp = this->getPosition();
@@ -169,8 +169,8 @@ void ReelSprite::stopSpin()
 void ReelSprite::incrementSpin(float delta)
 {
 	if (_isSpinning) {
-		Vec2 position1 = this->_reel1->getPosition(); // Returns const vec2& ... why are we modifying this even though it's a const?
-		Vec2 position2 = this->_reel2->getPosition(); // Returns const vec2& ... why are we modifying this even though it's a const?
+		Vec2 position1 = this->_reel1->getPosition(); // Returns const vec2&, but is copied
+		Vec2 position2 = this->_reel2->getPosition(); // Returns const vec2&, but is copied
 		float height;
 
 		if (!_isStopping) {

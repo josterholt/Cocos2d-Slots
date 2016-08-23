@@ -125,6 +125,16 @@ bool ReelScene::init()
 	overlay->setPosition(0, 0);
 	this->addChild(overlay, 0);
 
+	auto topGradient = Sprite::create("interface-gradient.png");
+	topGradient->setPosition(0, 0);
+	topGradient->setPosition(481, 523);
+	topGradient->setRotation(180.0f);
+	this->addChild(topGradient, 0);
+
+	auto bottomGradient = Sprite::create("interface-gradient.png");
+	bottomGradient->setPosition(481, 118);
+	this->addChild(bottomGradient, 0);
+
 
 	/**
 	* Begin touch event handling
