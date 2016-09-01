@@ -6,10 +6,10 @@
 USING_NS_CC;
 
 std::vector<MatchSequence> linearPatternSearch(std::vector<std::vector<int>> grid) {
-	//cocos2d::log("Match check");
-	//cocos2d::log("%s %s %s", std::to_string(grid[0][0]).c_str(), std::to_string(grid[0][1]).c_str(), std::to_string(grid[0][2]).c_str());
-	//cocos2d::log("%s %s %s", std::to_string(grid[1][0]).c_str(), std::to_string(grid[1][1]).c_str(), std::to_string(grid[1][2]).c_str());
-	//cocos2d::log("%s %s %s", std::to_string(grid[2][0]).c_str(), std::to_string(grid[2][1]).c_str(), std::to_string(grid[2][2]).c_str());
+	cocos2d::log("Match check");
+	cocos2d::log("%s %s %s", std::to_string(grid[0][0]).c_str(), std::to_string(grid[0][1]).c_str(), std::to_string(grid[0][2]).c_str());
+	cocos2d::log("%s %s %s", std::to_string(grid[1][0]).c_str(), std::to_string(grid[1][1]).c_str(), std::to_string(grid[1][2]).c_str());
+	cocos2d::log("%s %s %s", std::to_string(grid[2][0]).c_str(), std::to_string(grid[2][1]).c_str(), std::to_string(grid[2][2]).c_str());
 
 	std::vector<MatchSequence> sequences;
 	size_t grid_size = grid.size();
@@ -41,7 +41,7 @@ std::vector<MatchSequence> linearPatternSearch(std::vector<std::vector<int>> gri
 std::array<int, 3> getStopPositions() {
 	std::array<int, 3> positions;
 	positions[0] = 0;
-	positions[1] = 1;
+	positions[1] = 0;
 	positions[2] = 0;
 	return positions;
 }

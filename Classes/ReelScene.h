@@ -23,7 +23,8 @@ private:
 	ReelSprite* _reel2;
 	ReelSprite* _reel3;
 	std::array<int, 3> stopCellPositions;
-	cocos2d::CCDrawNode* _matchLine1;
+	std::vector<cocos2d::CCDrawNode*> _matchLines;
+	
 	std::vector<ReelSprite*> _reels;
 	std::vector<std::vector<int>> _slotGrid;
 	cocos2d::Sprite* _mask;

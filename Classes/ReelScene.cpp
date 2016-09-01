@@ -35,10 +35,6 @@ bool ReelScene::init()
 		return false;
 	}
 
-	_matchLine1 = CCDrawNode::create();
-	this->addChild(_matchLine1);
-
-
 	float x_offset = 81.0f;
 	float _y_offset = 111.0f;
 
@@ -119,22 +115,41 @@ bool ReelScene::init()
 	_reels.push_back(_reel2);
 	_reels.push_back(_reel3);
 
+	// Adding matching lines
+	_matchLines.push_back(CCDrawNode::create());
+	_matchLines.push_back(CCDrawNode::create());
+	_matchLines.push_back(CCDrawNode::create());
 
+	this->addChild(_matchLines[0]);
+	this->addChild(_matchLines[1]);
+	this->addChild(_matchLines[2]);
+
+
+	// Add overlay
 	auto overlay = Sprite::create("overlay.png");
 	overlay->setAnchorPoint(Vec2(0, 0));
 	overlay->setPosition(0, 0);
 	this->addChild(overlay, 0);
 
-	auto topGradient = Sprite::create("interface-gradient.png");
+	auto topGradient = Sprite::create("interface_gradient.png");
 	topGradient->setPosition(0, 0);
 	topGradient->setPosition(481, 523);
 	topGradient->setRotation(180.0f);
 	this->addChild(topGradient, 0);
 
-	auto bottomGradient = Sprite::create("interface-gradient.png");
+	auto bottomGradient = Sprite::create("interface_gradient.png");
 	bottomGradient->setPosition(481, 118);
 	this->addChild(bottomGradient, 0);
 
+	auto uiBottomPane = Sprite::create("ui_bottom_pane.png");
+	uiBottomPane->setPosition(0, 0);
+	uiBottomPane->setAnchorPoint(Vec2(0, 0));
+	this->addChild(uiBottomPane, 1);
+
+	auto uiSpinButton = Sprite::create("ui_spin_button.png");
+	uiSpinButton->setPosition(785, 0);
+	uiSpinButton->setAnchorPoint(Vec2(0, 0));
+	this->addChild(uiSpinButton, 1);
 
 	/**
 	* Begin touch event handling
@@ -144,11 +159,20 @@ bool ReelScene::init()
 	_audioMgr->preloadEffect("stop-reel.mp3");
 
 	EventListenerTouchOneByOne* listener = EventListenerTouchOneByOne::create();
-	listener->onTouchBegan = [this](Touch* touch, Event* event) -> bool {
+	listener->onTouchBegan = [this, uiSpinButton](Touch* touch, Event* event) -> bool {
+		Vec2 p = touch->getLocation();
+		Rect rect = uiSpinButton->getBoundingBox();
+
+		if (!rect.containsPoint(p)) {
+			return false;
+		}
+
 		/**
 		 * Pre-round routines
 		 */
-		_matchLine1->clear();
+		for (CCDrawNode* node : _matchLines) {
+			node->clear();
+		}
 
 
 		/**
@@ -234,12 +258,14 @@ void ReelScene::updateSlotGrid()
 }
 
 void ReelScene::displayMatches() {
-	Vec2 line_offset = Vec2(80.0f, 400.0f);
+	Vec2 line_offset = Vec2(80.0f, 111.0f);
 	float cell_height = (2514 / 18);
 	float row_width = 267;
 	float cell_mid_height = cell_height * 0.5f;
 	float cell_mid_width = row_width * 0.5f;
 	float line_size = 2.0f;
+
+	std::vector<cocos2d::CCDrawNode*>::iterator it = _matchLines.begin();
 
 	std::vector<MatchSequence> sequences = linearPatternSearch(_slotGrid);
 	for (MatchSequence sequence : sequences) {
@@ -248,18 +274,23 @@ void ReelScene::displayMatches() {
 		Vec2 column2 = sequence.matches[1];
 		Vec2 column3 = sequence.matches[2];
 
-		CCPoint line1_start = CCPoint(row_width * column1.x + line_offset.x, (cell_height * -column1.y) + cell_mid_height + line_offset.y);
-		CCPoint line1_end = CCPoint(row_width * column1.x + cell_mid_width + line_offset.x, (cell_height * -column1.y) + cell_mid_height + line_offset.y);
-		_matchLine1->drawSegment(line1_start, line1_end, line_size, Color4F(0.0f, 0.0f, 1.0f, 1.0f));
+		CCPoint line1_start = CCPoint(row_width * column1.x + line_offset.x, (cell_height * column1.y) + cell_mid_height + line_offset.y);
+		CCPoint line1_end = CCPoint(row_width * column1.x + cell_mid_width + line_offset.x, (cell_height * column1.y) + cell_mid_height + line_offset.y);
+		(*it)->drawSegment(line1_start, line1_end, line_size, Color4F(0.0f, 0.0f, 1.0f, 1.0f));
 
-		CCPoint line2_end = CCPoint(row_width * column2.x + cell_mid_width + line_offset.x, (cell_height * -column2.y) + cell_mid_height + line_offset.y);
-		_matchLine1->drawSegment(line1_end, line2_end, line_size, Color4F(0.0f, 0.0f, 1.0f, 1.0f));
+		CCPoint line2_end = CCPoint(row_width * column2.x + cell_mid_width + line_offset.x, (cell_height * column2.y) + cell_mid_height + line_offset.y);
+		(*it)->drawSegment(line1_end, line2_end, line_size, Color4F(0.0f, 0.0f, 1.0f, 1.0f));
 
-		CCPoint line3_start = CCPoint(row_width * column3.x + cell_mid_width + line_offset.x, (cell_height * -column3.y) + cell_mid_height + line_offset.y);
-		_matchLine1->drawSegment(line2_end, line3_start, line_size, Color4F(0.0f, 0.0f, 1.0f, 1.0f));
+		CCPoint line3_start = CCPoint(row_width * column3.x + cell_mid_width + line_offset.x, (cell_height * column3.y) + cell_mid_height + line_offset.y);
+		(*it)->drawSegment(line2_end, line3_start, line_size, Color4F(0.0f, 0.0f, 1.0f, 1.0f));
 
-		CCPoint line4_end = CCPoint(row_width * column3.x + row_width + line_offset.x, (cell_height * -column3.y) + cell_mid_height + line_offset.y);
-		_matchLine1->drawSegment(line3_start, line4_end, line_size, Color4F(0.0f, 0.0f, 1.0f, 1.0f));
+		CCPoint line4_end = CCPoint(row_width * column3.x + row_width + line_offset.x, (cell_height * column3.y) + cell_mid_height + line_offset.y);
+		(*it)->drawSegment(line3_start, line4_end, line_size, Color4F(0.0f, 0.0f, 1.0f, 1.0f));
+
+		if (it == std::end(_matchLines)) {
+			continue;
+		}
+		std::next(it);
 	}
 }
 
