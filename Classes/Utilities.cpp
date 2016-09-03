@@ -1,15 +1,16 @@
 #include "Utilities.h"
 #include "cocos2d.h"
+#include "ReelScene.h"
 #include <vector>
 #include <array>
 
 USING_NS_CC;
 
 std::vector<MatchSequence> linearPatternSearch(std::vector<std::vector<int>> grid) {
-	cocos2d::log("Match check");
-	cocos2d::log("%s %s %s", std::to_string(grid[0][0]).c_str(), std::to_string(grid[0][1]).c_str(), std::to_string(grid[0][2]).c_str());
-	cocos2d::log("%s %s %s", std::to_string(grid[1][0]).c_str(), std::to_string(grid[1][1]).c_str(), std::to_string(grid[1][2]).c_str());
-	cocos2d::log("%s %s %s", std::to_string(grid[2][0]).c_str(), std::to_string(grid[2][1]).c_str(), std::to_string(grid[2][2]).c_str());
+	//cocos2d::log("Match check");
+	//cocos2d::log("%s %s %s", std::to_string(grid[0][0]).c_str(), std::to_string(grid[0][1]).c_str(), std::to_string(grid[0][2]).c_str());
+	//cocos2d::log("%s %s %s", std::to_string(grid[1][0]).c_str(), std::to_string(grid[1][1]).c_str(), std::to_string(grid[1][2]).c_str());
+	//cocos2d::log("%s %s %s", std::to_string(grid[2][0]).c_str(), std::to_string(grid[2][1]).c_str(), std::to_string(grid[2][2]).c_str());
 
 	std::vector<MatchSequence> sequences;
 	size_t grid_size = grid.size();
@@ -31,6 +32,9 @@ std::vector<MatchSequence> linearPatternSearch(std::vector<std::vector<int>> gri
 		}
 
 		if (sequence.matches.size() == grid_size) {
+			int slot_value = grid[sequence.matches[0].x][sequence.matches[0].y];
+
+			sequence.weight = ReelScene::payTable[slot_value];
 			sequences.push_back(sequence);
 		}
 	}
@@ -40,9 +44,9 @@ std::vector<MatchSequence> linearPatternSearch(std::vector<std::vector<int>> gri
 
 std::array<int, 3> getStopPositions() {
 	std::array<int, 3> positions;
-	positions[0] = 0;
-	positions[1] = 0;
-	positions[2] = 0;
+	positions[0] = 15;
+	positions[1] = 12;
+	positions[2] = 11;
 	return positions;
 }
 

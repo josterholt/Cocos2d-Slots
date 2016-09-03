@@ -26,9 +26,9 @@ public:
 	static enum slotNames { SEVEN, PLUM, ORANGE, CHERRY, BELL, STRAWBERRY, PARTY, LEMON };
 	std::vector<int> cells;
 	
-	cocos2d::Label* debugSlotName1 = cocos2d::Label::createWithSystemFont("Undefined", "Helvetica", 60);
-	cocos2d::Label* debugSlotName2 = cocos2d::Label::createWithSystemFont("Undefined", "Helvetica", 60);
-	cocos2d::Label* debugSlotName3 = cocos2d::Label::createWithSystemFont("Undefined", "Helvetica", 60);
+	cocos2d::Label* debugSlotName1 = cocos2d::Label::createWithSystemFont("", "Helvetica", 60);
+	cocos2d::Label* debugSlotName2 = cocos2d::Label::createWithSystemFont("", "Helvetica", 60);
+	cocos2d::Label* debugSlotName3 = cocos2d::Label::createWithSystemFont("", "Helvetica", 60);
 
 	int getCellValue(int num);
 	float getCellHeight();

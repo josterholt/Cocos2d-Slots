@@ -33,14 +33,17 @@ bool ReelSprite::init(const std::string& filename)
 	Vec2 tmp = this->getPosition();
 	debugSlotName1->setPosition(tmp.x + 100, tmp.y + (_cellHeight * 2.5));
 	debugSlotName1->setColor(cocos2d::Color3B(0, 0, 0));
+	debugSlotName1->setVisible(false);
 	this->addChild(debugSlotName1);
 
 	debugSlotName2->setPosition(tmp.x + 100, tmp.y + (_cellHeight * 1.5));
 	debugSlotName2->setColor(cocos2d::Color3B(0, 0, 0));
+	debugSlotName2->setVisible(false);
 	this->addChild(debugSlotName2);
 
 	debugSlotName3->setPosition(tmp.x + 100, tmp.y + _cellHeight * 0.5);
 	debugSlotName3->setColor(cocos2d::Color3B(0, 0, 0));
+	debugSlotName3->setVisible(false);
 	this->addChild(debugSlotName3);
 
 	_audioMgr = CocosDenshion::SimpleAudioEngine::getInstance();
@@ -160,9 +163,17 @@ void ReelSprite::stopSpin()
 		_isStopping = false;
 		this->_audioMgr->playEffect("stop-reel.mp3", false, 1.0f, 1.0f, 1.0f);
 
-		debugSlotName1->setString(std::to_string(getCellValue(0)));
-		debugSlotName2->setString(std::to_string(getCellValue(1)));
-		debugSlotName3->setString(std::to_string(getCellValue(2)));
+		if (debugSlotName1) {
+			debugSlotName1->setString(std::to_string(getCellValue(0)));
+		}
+
+		if (debugSlotName2) {
+			debugSlotName2->setString(std::to_string(getCellValue(1)));
+		}
+
+		if (debugSlotName3) {
+			debugSlotName3->setString(std::to_string(getCellValue(2)));
+		}
 	}
 }
 

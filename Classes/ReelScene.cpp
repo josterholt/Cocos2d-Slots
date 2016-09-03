@@ -5,8 +5,8 @@
 #include "SimpleAudioEngine.h"
 #include "Utilities.h"
 
-
 USING_NS_CC;
+ReelScene::PayTableMap ReelScene::payTable = ReelScene::initPayTable();
 
 ReelScene::ReelScene() 
 	: _slotGrid(3, std::vector<int>(3)),
@@ -34,6 +34,8 @@ bool ReelScene::init()
 	{
 		return false;
 	}
+
+	_loadPlayerData();
 
 	float x_offset = 81.0f;
 	float _y_offset = 111.0f;
@@ -115,6 +117,9 @@ bool ReelScene::init()
 	_reels.push_back(_reel2);
 	_reels.push_back(_reel3);
 
+	//ReelScene::initPayTable();
+	//payTable[1] = 300;
+	//ReelScene::initPayTable();
 	// Adding matching lines
 	_matchLines.push_back(CCDrawNode::create());
 	_matchLines.push_back(CCDrawNode::create());
@@ -146,6 +151,12 @@ bool ReelScene::init()
 	uiBottomPane->setAnchorPoint(Vec2(0, 0));
 	this->addChild(uiBottomPane, 1);
 
+	_hudSprite = HudSprite::create();
+	_hudSprite->setAnchorPoint(Vec2(0, 0));
+	_hudSprite->setPosition(0, 0);
+	this->addChild(_hudSprite, 1);
+
+
 	auto uiSpinButton = Sprite::create("ui_spin_button.png");
 	uiSpinButton->setPosition(785, 0);
 	uiSpinButton->setAnchorPoint(Vec2(0, 0));
@@ -160,6 +171,10 @@ bool ReelScene::init()
 
 	EventListenerTouchOneByOne* listener = EventListenerTouchOneByOne::create();
 	listener->onTouchBegan = [this, uiSpinButton](Touch* touch, Event* event) -> bool {
+		if (_reel1->_isSpinning || _reel2->_isSpinning || _reel3->_isSpinning) {
+			return false;
+		}
+
 		Vec2 p = touch->getLocation();
 		Rect rect = uiSpinButton->getBoundingBox();
 
@@ -208,6 +223,45 @@ bool ReelScene::init()
 	this->scheduleUpdate();
 
 	return true;
+}
+
+void ReelScene::_loadPlayerData() {
+	cocos2d::FileUtils* futil = FileUtils::getInstance();
+	if (futil->isFileExist("profile.plist")) {
+		_profile = FileUtils::getInstance()->getValueMapFromFile("profile.plist");
+		cocos2d::log("Loaded from file");
+	}
+	else {
+		cocos2d::log("Creating new file");
+		ValueMap value_map;
+		value_map["xp"] = Value(0);
+
+		if (!FileUtils::getInstance()->writeValueMapToFile(value_map, "profile.plist")) {
+			cocos2d::log("Error writing to profile");
+		}
+
+		_profile = value_map;
+
+	}
+}
+
+void ReelScene::_updateExperience(int xp) {
+	int old_xp = _profile["xp"].asInt();
+	int new_xp = old_xp + xp;
+	_profile["xp"] = Value(new_xp);
+	cocos2d::log("XP: ", _profile["xp"].asString().c_str());
+
+	if (!FileUtils::getInstance()->writeValueMapToFile(_profile, "profile.plist")) {
+		cocos2d::log("Error writing to profile");
+	}
+
+	// Don't update UI until this has been saved
+	_hudSprite->setExperience(_profile["xp"].asInt());
+	
+	std::ostringstream stringStream;
+	stringStream << "Experience rewarded " << xp << "!";
+
+	_hudSprite->setStatus(stringStream.str());
 }
 
 void ReelScene::onDraw()
@@ -274,22 +328,25 @@ void ReelScene::displayMatches() {
 		Vec2 column2 = sequence.matches[1];
 		Vec2 column3 = sequence.matches[2];
 
-		CCPoint line1_start = CCPoint(row_width * column1.x + line_offset.x, (cell_height * column1.y) + cell_mid_height + line_offset.y);
-		CCPoint line1_end = CCPoint(row_width * column1.x + cell_mid_width + line_offset.x, (cell_height * column1.y) + cell_mid_height + line_offset.y);
+		CCPoint line1_start = CCPoint(row_width * column1.x + line_offset.x, (cell_height * (2 - column1.y)) + cell_mid_height + line_offset.y);
+		CCPoint line1_end = CCPoint(row_width * column1.x + cell_mid_width + line_offset.x, (cell_height * (2 - column1.y)) + cell_mid_height + line_offset.y);
 		(*it)->drawSegment(line1_start, line1_end, line_size, Color4F(0.0f, 0.0f, 1.0f, 1.0f));
 
-		CCPoint line2_end = CCPoint(row_width * column2.x + cell_mid_width + line_offset.x, (cell_height * column2.y) + cell_mid_height + line_offset.y);
+		CCPoint line2_end = CCPoint(row_width * column2.x + cell_mid_width + line_offset.x, (cell_height * (2 - column2.y)) + cell_mid_height + line_offset.y);
 		(*it)->drawSegment(line1_end, line2_end, line_size, Color4F(0.0f, 0.0f, 1.0f, 1.0f));
 
-		CCPoint line3_start = CCPoint(row_width * column3.x + cell_mid_width + line_offset.x, (cell_height * column3.y) + cell_mid_height + line_offset.y);
+		CCPoint line3_start = CCPoint(row_width * column3.x + cell_mid_width + line_offset.x, (cell_height * (2 - column3.y)) + cell_mid_height + line_offset.y);
 		(*it)->drawSegment(line2_end, line3_start, line_size, Color4F(0.0f, 0.0f, 1.0f, 1.0f));
 
-		CCPoint line4_end = CCPoint(row_width * column3.x + row_width + line_offset.x, (cell_height * column3.y) + cell_mid_height + line_offset.y);
+		CCPoint line4_end = CCPoint(row_width * column3.x + row_width + line_offset.x, (cell_height * (2 - column3.y)) + cell_mid_height + line_offset.y);
 		(*it)->drawSegment(line3_start, line4_end, line_size, Color4F(0.0f, 0.0f, 1.0f, 1.0f));
 
 		if (it == std::end(_matchLines)) {
 			continue;
 		}
+
+		// Update experience
+		_updateExperience(sequence.weight);
 		std::next(it);
 	}
 }
