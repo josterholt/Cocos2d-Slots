@@ -6,6 +6,8 @@
 #include "Utilities.h"
 
 USING_NS_CC;
+
+// Initialize payTable. This probably should be refactored.
 ReelScene::PayTableMap ReelScene::payTable = ReelScene::initPayTable();
 
 ReelScene::ReelScene() 
@@ -206,7 +208,7 @@ bool ReelScene::init()
 		}, this, 0.3f, false, 0.0f, false, "myCallbackKey1");
 
 		scheduler->schedule([this, stop_positions](float dt) {
-			this->_reel3->startSpin(this->_reel2->spinInterval, stop_positions[2]);
+			this->_reel3->startSpin(this->_reel1->spinInterval + this->_reel2->spinInterval, stop_positions[2]);
 		}, this, 0.5f, false, 0.0f, false, "myCallbackKey2");
 
 		return true;

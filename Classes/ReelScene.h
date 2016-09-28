@@ -23,6 +23,8 @@ public:
 	CREATE_FUNC(ReelScene);
 	typedef std::map<int, int> PayTableMap;
 	static PayTableMap payTable; // Based on a sequence of single matching number
+	//static PayTableMap payTable2 = { { 0, 1 } };
+
 
 	static PayTableMap initPayTable() {
 		// Initialize pay table

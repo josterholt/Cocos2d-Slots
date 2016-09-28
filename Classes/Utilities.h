@@ -15,6 +15,8 @@ struct MatchSequence {
 	int weight = 0;
 };
 
+void recursiveMatch(std::vector<std::vector<int>>& grid, std::vector<MatchSequence>& matches, MatchSequence frag_match, int row, int col, int next_row);
+
 std::vector<MatchSequence> linearPatternSearch(std::vector<std::vector<int>> grid);
 std::array<int, 3> getStopPositions();
 
