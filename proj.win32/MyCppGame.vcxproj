@@ -208,9 +208,7 @@ xcopy /Y /Q "$(COCOS_FRAMEWORKS)\cocos2d-x-3.9\prebuilt\win32\*.*" "$(OutDir)"
     <ClCompile Include="..\Classes\AppDelegate.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Unit Testing|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\Classes\GraphicsScene.cpp" />
-    <ClCompile Include="..\Classes\HelloWorldScene.cpp" />
-    <ClCompile Include="..\Classes\LineScene.cpp" />
+    <ClCompile Include="..\Classes\HudSprite.cpp" />
     <ClCompile Include="..\Classes\ReelScene.cpp" />
     <ClCompile Include="..\Classes\ReelSprite.cpp" />
     <ClCompile Include="..\Classes\TestDelegate.cpp">
@@ -224,9 +222,7 @@ xcopy /Y /Q "$(COCOS_FRAMEWORKS)\cocos2d-x-3.9\prebuilt\win32\*.*" "$(OutDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Unit Testing|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\Classes\catch.hpp" />
-    <ClInclude Include="..\Classes\GraphicsScene.h" />
-    <ClInclude Include="..\Classes\HelloWorldScene.h" />
-    <ClInclude Include="..\Classes\LineScene.h" />
+    <ClInclude Include="..\Classes\HudSprite.h" />
     <ClInclude Include="..\Classes\ReelScene.h" />
     <ClInclude Include="..\Classes\ReelSprite.h" />
     <ClInclude Include="..\Classes\TestDelegate.h">

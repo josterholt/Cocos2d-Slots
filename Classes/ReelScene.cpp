@@ -42,7 +42,7 @@ bool ReelScene::init()
 	float x_offset = 81.0f;
 	float _y_offset = 111.0f;
 
-	_reel1 = ReelSprite::create("reel1-debug.png", {
+	_reel1 = ReelSprite::create("reel1.png", {
 		ReelSprite::slotNames::SEVEN,
 		ReelSprite::slotNames::PLUM,
 		ReelSprite::slotNames::ORANGE,

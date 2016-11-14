@@ -35,6 +35,7 @@ public:
 		tmp_map[ReelSprite::slotNames::PLUM] = 50;
 		tmp_map[ReelSprite::slotNames::SEVEN] = 500;
 		tmp_map[ReelSprite::slotNames::STRAWBERRY] = 300;
+		tmp_map[ReelSprite::slotNames::BELL] = 200;
 		return tmp_map;
 
 	}
