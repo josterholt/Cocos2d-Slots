@@ -1,6 +1,7 @@
 #include "TestDelegate.h"
 //#include "HelloWorldScene.h"
 #include "ReelScene.h"
+#include "Utilities.h"
 
 USING_NS_CC;
 
@@ -75,7 +76,6 @@ void AppDelegate::applicationWillEnterForeground() {
     // SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
 }
 
-#include "Utilities.h"
 TEST_CASE("TESTING")
 {
 	SECTION("RPGSLOT TEST") {
@@ -85,4 +85,22 @@ TEST_CASE("TESTING")
 		ReelScene *layer = (ReelScene *)scene->getChildByTag(MAIN_LAYER);
 		layer->myTestFunc();
 	}
+
+	SECTION("Match Test") {
+		std::vector<std::vector<int>> grid = { { 0, 0, 0 },{ 2, 1, 5 },{ 0, 3, 5 } };
+		std::vector<MatchSequence> matches = linearPatternSearch(grid);
+		// There is only one result
+		assert(matches.size() == 1);
+
+		// Match is first row
+		assert(matches[0].matches[0].row == 0);
+		assert(matches[0].matches[0].col == 0);
+
+		assert(matches[0].matches[1].row == 0);
+		assert(matches[0].matches[1].col == 1);
+
+		assert(matches[0].matches[2].row == 0);
+		assert(matches[0].matches[2].col == 2);
+	}
+
 }

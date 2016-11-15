@@ -10,13 +10,10 @@ USING_NS_CC;
 std::vector<MatchSequence> linearPatternSearch(std::vector<std::vector<int>> grid) {
 	std::vector<MatchSequence> sequences;
 
-	std::vector<std::vector<int>> foo = { { 0, 0, 0 }, { 2, 1, 5 }, { 0, 3, 5 } };
-
-
 	MatchSequence fragment;
-	recursiveMatch(foo, sequences, fragment, 0, 0, 0);
-	recursiveMatch(foo, sequences, fragment, 1, 0, 0);
-	recursiveMatch(foo, sequences, fragment, 2, 0, 1);
+	recursiveMatch(grid, sequences, fragment, 0, 0, 0);
+	recursiveMatch(grid, sequences, fragment, 1, 0, 0);
+	recursiveMatch(grid, sequences, fragment, 2, 0, 1);
 
 	return sequences;
 }
