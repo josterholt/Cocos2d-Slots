@@ -10,15 +10,12 @@ USING_NS_CC;
 std::vector<MatchSequence> linearPatternSearch(std::vector<std::vector<int>> grid) {
 	std::vector<MatchSequence> sequences;
 
-	std::vector<std::vector<int>> foo = { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } };
+	std::vector<std::vector<int>> foo = { { 0, 0, 0 }, { 2, 1, 5 }, { 0, 3, 5 } };
 
 
 	MatchSequence fragment;
-	cocos2d::log("Start A");
 	recursiveMatch(foo, sequences, fragment, 0, 0, 0);
-	cocos2d::log("Start B");
 	recursiveMatch(foo, sequences, fragment, 1, 0, 0);
-	cocos2d::log("Start C");
 	recursiveMatch(foo, sequences, fragment, 2, 0, 1);
 
 	return sequences;
@@ -48,12 +45,12 @@ void recursiveMatch(std::vector<std::vector<int>>& grid, std::vector<MatchSequen
 	cocos2d::log("(%d, %d) -> (%d, %d)", row, col, next_row, next_col);
 	if (grid[row][col] == grid[next_row][next_col]) {
 		if (col == 0) {
-			frag_match.matches.push_back(Vec2(col, row));
+			frag_match.matches.push_back(SlotsMatch(row, col));
 		}
-		frag_match.matches.push_back(Vec2(next_col, next_row));
+		frag_match.matches.push_back(SlotsMatch(next_row, next_col));
 		
 		if (frag_match.matches.size() == MAX_SLOT_MATCHES) {
-			int slot_value = grid[frag_match.matches[0].x][frag_match.matches[0].y];
+			int slot_value = grid[frag_match.matches[0].row][frag_match.matches[0].col];
 			frag_match.weight = ReelScene::payTable[slot_value];
 
 			matches.push_back(frag_match);

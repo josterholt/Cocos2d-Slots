@@ -326,21 +326,21 @@ void ReelScene::displayMatches() {
 	std::vector<MatchSequence> sequences = linearPatternSearch(_slotGrid);
 	for (MatchSequence sequence : sequences) {
 		// Begging of column to center of first cell
-		Vec2 column1 = sequence.matches[0];
-		Vec2 column2 = sequence.matches[1];
-		Vec2 column3 = sequence.matches[2];
+		SlotsMatch column1 = sequence.matches[0];
+		SlotsMatch column2 = sequence.matches[1];
+		SlotsMatch column3 = sequence.matches[2];
 
-		CCPoint line1_start = CCPoint(row_width * column1.x + line_offset.x, (cell_height * (2 - column1.y)) + cell_mid_height + line_offset.y);
-		CCPoint line1_end = CCPoint(row_width * column1.x + cell_mid_width + line_offset.x, (cell_height * (2 - column1.y)) + cell_mid_height + line_offset.y);
+		CCPoint line1_start = CCPoint(row_width * column1.col + line_offset.x, (cell_height * (2 - column1.row)) + cell_mid_height + line_offset.y);
+		CCPoint line1_end = CCPoint(row_width * column1.col + cell_mid_width + line_offset.x, (cell_height * (2 - column1.row)) + cell_mid_height + line_offset.y);
 		(*it)->drawSegment(line1_start, line1_end, line_size, Color4F(0.0f, 0.0f, 1.0f, 1.0f));
 
-		CCPoint line2_end = CCPoint(row_width * column2.x + cell_mid_width + line_offset.x, (cell_height * (2 - column2.y)) + cell_mid_height + line_offset.y);
+		CCPoint line2_end = CCPoint(row_width * column2.col + cell_mid_width + line_offset.x, (cell_height * (2 - column2.row)) + cell_mid_height + line_offset.y);
 		(*it)->drawSegment(line1_end, line2_end, line_size, Color4F(0.0f, 0.0f, 1.0f, 1.0f));
 
-		CCPoint line3_start = CCPoint(row_width * column3.x + cell_mid_width + line_offset.x, (cell_height * (2 - column3.y)) + cell_mid_height + line_offset.y);
+		CCPoint line3_start = CCPoint(row_width * column3.col + cell_mid_width + line_offset.x, (cell_height * (2 - column3.row)) + cell_mid_height + line_offset.y);
 		(*it)->drawSegment(line2_end, line3_start, line_size, Color4F(0.0f, 0.0f, 1.0f, 1.0f));
 
-		CCPoint line4_end = CCPoint(row_width * column3.x + row_width + line_offset.x, (cell_height * (2 - column3.y)) + cell_mid_height + line_offset.y);
+		CCPoint line4_end = CCPoint(row_width * column3.col + row_width + line_offset.x, (cell_height * (2 - column3.row)) + cell_mid_height + line_offset.y);
 		(*it)->drawSegment(line3_start, line4_end, line_size, Color4F(0.0f, 0.0f, 1.0f, 1.0f));
 
 		if (it == std::end(_matchLines)) {

@@ -1,0 +1,5 @@
+varying vec3 coord;
+
+void main(void) {
+	gl_position = vec4(coord, 1);
+}

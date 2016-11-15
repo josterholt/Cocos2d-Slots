@@ -1,0 +1,25 @@
+<?xml version="1.0" standalone="no" ?>
+<!DOCTYPE project PUBLIC "-//audacityproject-1.3.0//DTD//EN" "http://audacity.sourceforge.net/xml/audacityproject-1.3.0.dtd" >
+<project xmlns="http://audacity.sourceforge.net/xml/" projname="stop_data" version="1.3.0" audacityversion="2.0.3" sel0="0.0000000000" sel1="0.7118367347" vpos="0" h="0.0000000000" zoom="86.1328125000" rate="44100.0">
+	<tags/>
+	<wavetrack name="slot-machine-pull-handle-and-wheels-preview" channel="0" linked="1" mute="0" solo="0" height="150" minimized="0" isSelected="1" rate="22050" gain="1.0" pan="0.0">
+		<waveclip offset="0.00000000">
+			<sequence maxsamples="262144" sampleformat="262159" numsamples="15696">
+				<waveblock start="0">
+					<simpleblockfile filename="e00004b2.au" len="15696" min="-0.057799" max="0.073483" rms="0.004174"/>
+				</waveblock>
+			</sequence>
+			<envelope numpoints="0"/>
+		</waveclip>
+	</wavetrack>
+	<wavetrack name="slot-machine-pull-handle-and-wheels-preview" channel="1" linked="0" mute="0" solo="0" height="150" minimized="0" isSelected="1" rate="22050" gain="1.0" pan="0.0">
+		<waveclip offset="0.00000000">
+			<sequence maxsamples="262144" sampleformat="262159" numsamples="15696">
+				<waveblock start="0">
+					<simpleblockfile filename="e00005bb.au" len="15696" min="-0.057799" max="0.073483" rms="0.004174"/>
+				</waveblock>
+			</sequence>
+			<envelope numpoints="0"/>
+		</waveclip>
+	</wavetrack>
+</project>

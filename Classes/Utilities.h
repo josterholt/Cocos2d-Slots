@@ -10,8 +10,14 @@ USING_NS_CC;
 #define MAIN_LAYER 10000
 #define WHO_REEL_MAIN 1
 
+struct SlotsMatch {
+	SlotsMatch(int _row, int _col) : row(_row), col(_col) {};
+	int row;
+	int col;
+};
+
 struct MatchSequence {
-	std::vector<Vec2> matches;
+	std::vector<SlotsMatch> matches;
 	int weight = 0;
 };
 
