@@ -18,6 +18,18 @@
     <ClCompile Include="..\Classes\AppDelegate.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\CommonUtils.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GraphicsScene.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\HudSprite.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\LineScene.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="..\Classes\ReelScene.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -27,18 +39,27 @@
     <ClCompile Include="..\Classes\Utilities.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\TestDelegate.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\HudSprite.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
       <Filter>win32</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\AppDelegate.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\catch.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\CommonUtils.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GraphicsScene.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\HudSprite.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\LineScene.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\ReelScene.h">
@@ -50,27 +71,10 @@
     <ClInclude Include="..\Classes\Utilities.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\catch.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\TestDelegate.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\HudSprite.h">
-      <Filter>src</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">
       <Filter>resource</Filter>
     </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\Resources\Mask.fragmentshader">
-      <Filter>resource</Filter>
-    </None>
-    <None Include="..\Resources\Mask.vertexshader">
-      <Filter>resource</Filter>
-    </None>
   </ItemGroup>
 </Project>
