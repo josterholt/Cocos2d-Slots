@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="MyCppGame" default="help">
+<project name="RPGSlots" default="help">
 
     <!-- The local.properties file is created and updated by the 'android' tool.
          It contains the path to the SDK. It should *NOT* be checked into
@@ -79,13 +79,5 @@
     -->
     <!-- version-tag: 1 -->
     <import file="${sdk.dir}/tools/ant/build.xml" />
-
-    <target name="-pre-compile">
-        <!-- Redefine project.all.jars.path before -compile executes -->
-        <path id="project.all.jars.path">
-            <fileset file="./jars/*.jar" />
-            <fileset file="${sdk.dir}/tools/support/*.jar" />
-        </path>
-    </target>
 
 </project>
