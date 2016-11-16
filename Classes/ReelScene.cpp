@@ -191,6 +191,9 @@ bool ReelScene::init()
 			node->clear();
 		}
 
+		// Clear status
+		_hudSprite->setStatus("");
+
 
 		/**
 		 * Start new round
