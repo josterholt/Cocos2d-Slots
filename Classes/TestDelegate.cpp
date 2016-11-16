@@ -86,7 +86,7 @@ TEST_CASE("TESTING")
 		layer->myTestFunc();
 	}
 
-	SECTION("Match Test") {
+	SECTION("Match One Line") {
 		std::vector<std::vector<int>> grid = { { 0, 0, 0 },{ 2, 1, 5 },{ 0, 3, 5 } };
 		std::vector<MatchSequence> matches = linearPatternSearch(grid);
 		// There is only one result
@@ -103,4 +103,74 @@ TEST_CASE("TESTING")
 		assert(matches[0].matches[2].col == 2);
 	}
 
+	SECTION("Match Two Lines") {
+		std::vector<std::vector<int>> grid = { { 0, 0, 0 },{ 1, 1, 1 },{ 0, 3, 5 } };
+		std::vector<MatchSequence> matches = linearPatternSearch(grid);
+		// There is only one result
+		assert(matches.size() == 2);
+
+		// Match first row
+		assert(matches[0].matches[0].row == 0);
+		assert(matches[0].matches[0].col == 0);
+
+		assert(matches[0].matches[1].row == 0);
+		assert(matches[0].matches[1].col == 1);
+
+		assert(matches[0].matches[2].row == 0);
+		assert(matches[0].matches[2].col == 2);
+
+		// Match second row
+		assert(matches[1].matches[0].row == 1);
+		assert(matches[1].matches[0].col == 0);
+
+		assert(matches[1].matches[1].row == 1);
+		assert(matches[1].matches[1].col == 1);
+
+		assert(matches[1].matches[2].row == 1);
+		assert(matches[1].matches[2].col == 2);
+	}
+
+	SECTION("Match One Diagonal Lines") {
+		std::vector<std::vector<int>> grid = { { 0, 3, 5 },{ 2, 0, 0 },{ 1, 3, 5 } };
+		std::vector<MatchSequence> matches = linearPatternSearch(grid);
+		// There is only one result
+		assert(matches.size() == 1);
+
+		// Match first row
+		assert(matches[0].matches[0].row == 0);
+		assert(matches[0].matches[0].col == 0);
+
+		assert(matches[0].matches[1].row == 1);
+		assert(matches[0].matches[1].col == 1);
+
+		assert(matches[0].matches[2].row == 1);
+		assert(matches[0].matches[2].col == 2);
+	}
+
+	SECTION("Mixed Match Lines") {
+		std::vector<std::vector<int>> grid = { { 0, 0, 0 },{ 1, 3, 4 },{ 0, 1, 1 } };
+		std::vector<MatchSequence> matches = linearPatternSearch(grid);
+		// There is only one result
+		assert(matches.size() == 2);
+
+		// Match first row
+		assert(matches[0].matches[0].row == 0);
+		assert(matches[0].matches[0].col == 0);
+
+		assert(matches[0].matches[1].row == 0);
+		assert(matches[0].matches[1].col == 1);
+
+		assert(matches[0].matches[2].row == 0);
+		assert(matches[0].matches[2].col == 2);
+
+		// Match second row
+		assert(matches[1].matches[0].row == 1);
+		assert(matches[1].matches[0].col == 0);
+
+		assert(matches[1].matches[1].row == 2);
+		assert(matches[1].matches[1].col == 1);
+
+		assert(matches[1].matches[2].row == 2);
+		assert(matches[1].matches[2].col == 2);
+	}
 }
