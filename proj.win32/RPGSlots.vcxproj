@@ -205,10 +205,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\AppDelegate.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Test|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\Classes\CommonUtils.cpp" />
-    <ClCompile Include="..\Classes\GraphicsScene.cpp" />
     <ClCompile Include="..\Classes\HudSprite.cpp" />
-    <ClCompile Include="..\Classes\LineScene.cpp" />
     <ClCompile Include="..\Classes\ReelScene.cpp" />
     <ClCompile Include="..\Classes\ReelSprite.cpp" />
     <ClCompile Include="..\Classes\TestDelegate.cpp">
@@ -222,10 +219,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Test|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\Classes\catch.hpp" />
-    <ClInclude Include="..\Classes\CommonUtils.h" />
-    <ClInclude Include="..\Classes\GraphicsScene.h" />
     <ClInclude Include="..\Classes\HudSprite.h" />
-    <ClInclude Include="..\Classes\LineScene.h" />
     <ClInclude Include="..\Classes\ReelScene.h" />
     <ClInclude Include="..\Classes\ReelSprite.h" />
     <ClInclude Include="..\Classes\TestDelegate.h">
